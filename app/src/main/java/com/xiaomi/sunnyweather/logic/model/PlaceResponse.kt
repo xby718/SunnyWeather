@@ -1,6 +1,7 @@
 package com.xiaomi.sunnyweather.logic.model
 
 import com.google.gson.annotations.SerializedName
+import org.jetbrains.annotations.ApiStatus
 
 /**
  * @description:模型：
@@ -16,6 +17,6 @@ import com.google.gson.annotations.SerializedName
  * @date : 2026/2/10
  * Copyright (c) Xiaomi, Inc.
  **/
-data class PlaceResponse(val name : String,val place:List<Place>)           //数组
+data class PlaceResponse(val status : String,val place:List<Place>)           //数组
 data class Place(val name: String,val location: Location,@SerializedName("formatted_address") val address: String)
 data class Location(val lng: String,val lat: String)
