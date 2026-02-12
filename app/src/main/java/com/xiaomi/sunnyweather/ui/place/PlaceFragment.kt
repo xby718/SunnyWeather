@@ -1,6 +1,7 @@
 package com.xiaomi.sunnyweather.ui.place
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,10 @@ import com.xiaomi.sunnyweather.databinding.FragmentPlaceBinding
  * Copyright (c) Xiaomi, Inc.
  **/
 class PlaceFragment: Fragment() {
+
+    companion object {
+        private const val TAG = "PlaceSearch"
+    }
 
     private var _binding : FragmentPlaceBinding ?= null
     private val binding get() = _binding!!
@@ -58,6 +63,7 @@ class PlaceFragment: Fragment() {
         binding.searchPlaceEdit.doOnTextChanged { text, _, _, _ ->
             val content = text?.toString() ?: ""
             if(content.isNotEmpty()){
+                Log.d(TAG, "[Fragment] 用户输入触发搜索: query=$content")
                 viewModel.searchPlaces(content)
             }else{
                 binding.recycleView.visibility = View.GONE
@@ -70,14 +76,18 @@ class PlaceFragment: Fragment() {
         viewModel.placeLiveData.observe(viewLifecycleOwner){ result ->
             val place = result.getOrNull()
             if(place != null){
+                Log.d(TAG, "[Fragment] 收到结果: 成功, 地点数量=${place.size}")
                 binding.recycleView.visibility = View.VISIBLE
                 binding.bgImageView.visibility = View.GONE
                 viewModel.placeList.clear()
                 viewModel.placeList.addAll(place)
                 adapter.notifyDataSetChanged()
-            }else{
-                Toast.makeText(activity,"未能查询到任何地点", Toast.LENGTH_SHORT).show()
-                result.exceptionOrNull()?.printStackTrace()
+            } else {
+                val e = result.exceptionOrNull()
+                Log.e(TAG, "[Fragment] 收到结果: 失败, message=${e?.message}", e)
+                val msg = e?.message ?: "未能查询到任何地点"
+                Toast.makeText(activity, msg, Toast.LENGTH_LONG).show()
+                e?.printStackTrace()
             }
         }
     }

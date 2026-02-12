@@ -1,5 +1,7 @@
 package com.xiaomi.sunnyweather.logic.network
 
+import android.util.Log
+import com.xiaomi.sunnyweather.logic.model.PlaceResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,14 +22,14 @@ object SunnyWeatherNetwork {
 
     suspend fun searchPlaces(query: String) = placeService.searchPlace(query).await()               //使用了协程，await()很重要
 
-    private suspend fun <T> Call<T>.await():T{
+    private suspend fun <T> Call<T>.await(): T {
         return suspendCoroutine { continuation ->
             enqueue(object : Callback<T>{
                 override fun onResponse(call: Call<T?>, response: Response<T?>) {
                     val body = response.body()
-                    if(body!=null){
+                    if (body != null) {
                         continuation.resume(body)
-                    }else{
+                    } else {
                         continuation.resumeWithException(RuntimeException("response body is null"))
                     }
                 }
