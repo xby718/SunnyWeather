@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import org.jetbrains.annotations.ApiStatus
 
 /**
- * @description:模型：
+ * @description:模型,完全按照API返回的结果来设置，包括status与数组place。其中：
  * Place：
  *  "name": "中国 北京市 北京",
  *  "location": {

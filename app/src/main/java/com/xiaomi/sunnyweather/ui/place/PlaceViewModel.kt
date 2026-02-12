@@ -6,7 +6,8 @@ import androidx.lifecycle.switchMap
 import com.xiaomi.sunnyweather.logic.Repository
 import com.xiaomi.sunnyweather.logic.model.Place
 /**
- * @description:
+ * @description:ViewModel层
+ * 其中，switchMap详细见13.4.2，很重要
  * @author : xby
  * @email : xuebaoyu@xiaomi.com
  * @date : 2026/2/11
