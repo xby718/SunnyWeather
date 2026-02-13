@@ -29,4 +29,4 @@ data class PlaceResponse(
 }
 data class Place(val name: String, val location: Location, @SerializedName("formatted_address") val address: String)
 /** API 返回的 lat/lng 为数字，不能用 String */
-data class Location(val lng: Double, val lat: Double)
+data class Location(val lng: String, val lat: String)

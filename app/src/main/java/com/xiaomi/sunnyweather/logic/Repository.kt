@@ -2,10 +2,15 @@ package com.xiaomi.sunnyweather.logic
 
 import android.util.Log
 import androidx.lifecycle.liveData
+import com.xiaomi.sunnyweather.logic.model.DailyResponse
 import com.xiaomi.sunnyweather.logic.model.Place
 import com.xiaomi.sunnyweather.logic.model.PlaceResponse
+import com.xiaomi.sunnyweather.logic.model.Weather
 import com.xiaomi.sunnyweather.logic.network.SunnyWeatherNetwork
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlin.coroutines.CoroutineContext
 
 /**
  * @description:重点--将place换层places
@@ -36,4 +41,43 @@ object Repository {
         }
         emit(result)
     }
+
+    fun refreshWeather(lng: String,lat: String) = liveData(Dispatchers.IO) {
+        val result = try {
+            //协程作用域
+            coroutineScope {
+            val deferredRealtime = async {
+                SunnyWeatherNetwork.getRealtimeWeather(lng,lat)        //为什么
+            }
+            val defferedDaily = async {
+                SunnyWeatherNetwork.getDailyWeather(lng,lat)
+            }
+            val realtimeResponse = deferredRealtime.await()
+            val dailyResponse = defferedDaily.await()
+            if(realtimeResponse.stasus == "ok" && dailyResponse.status == "ok"){
+                val weather = Weather(realtimeResponse.result.realtime,dailyResponse.result.daily)
+                Result.success(weather)
+            }else{
+                Result.failure(
+                    java.lang.RuntimeException("realtime response status is ${realtimeResponse.stasus}"
+                            + "daily response status is ${dailyResponse.status}"
+                    )
+                )
+            }
+        }
+
+        }catch (e: Exception){
+            Result.failure<Weather>(e)
+        }
+        emit(result)
+    }
+
+//    private fun <T> fire(context: CoroutineContext,block:suspend () -> Result<T>) = liveData<Result<T>>(context) {
+//        val result = try {
+//            block()
+//        }catch (e: Exception){
+//            Result.failure<T>(e)
+//        }
+//        emit(result)
+//    }
 }
